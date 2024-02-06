@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="SP Mover Rule Library">
+  <ReferencedRules>
+    <Reference class="sailpoint.object.Rule" name="SP Common Rule Library"/>
+    <Reference class="sailpoint.object.Rule" name="SP Provisioning Rules Library"/>
+    <Reference class="sailpoint.object.Rule" name="SP Role Assigment Rule Library"/>
+  </ReferencedRules>
+  <Source>
+  import java.util.List;
+  import java.util.Map;
+  
+  import com.iam.IAMConstants;
+  import com.iam.IAMLogger;
+  import com.iam.IAMUtil;
+  
+  import sailpoint.api.Provisioner;
+  import sailpoint.api.SailPointContext;
+  import sailpoint.object.Bundle;
+  import sailpoint.object.Identity;
+  import sailpoint.object.Link;
+  import sailpoint.object.ProvisioningPlan;
+  import sailpoint.object.ProvisioningPlan.AccountRequest;
+  import sailpoint.object.ProvisioningPlan.AttributeRequest;
+  import sailpoint.object.ProvisioningProject;
+  import sailpoint.object.Workflow;
+  import sailpoint.tools.GeneralException;
+
+  public ProvisioningPlan buildMoverPlan(SailPointContext context, Workflow workflow) throws GeneralException {
+    IAMLogger.info(IAMLogger.MOVER, String.format("Building plan for: %s", workflow.getString("identityName")));
+    Identity identity = context.getObjectByName(Identity.class, workflow.getString("identityName"));
+
+    ProvisioningPlan plan = new ProvisioningPlan();
+    plan.setIdentity(identity);
+    plan.setComments("Adding Mover Access");
+    
+    plan = getDynamicRolesPlan(context, identity);
+    
+    List links = identity.getLinks();
+    AccountRequest.Operation acctOp = AccountRequest.Operation.Modify;
+    for (Link link : links) {
+      if (!link.isDisabled() &amp;&amp; IAMConstants.AD.equals(link.getApplicationName())) {
+        List attrReqs = getUpdateAttributeRequests(context, identity, link);
+        if (attrReqs != null &amp;&amp; !attrReqs.isEmpty()) {
+          AccountRequest acctReq = new AccountRequest(acctOp, link.getApplicationName(), link.getInstance(), link.getNativeIdentity());
+          acctReq.addAll(attrReqs);
+          plan.add(acctReq);
+        }
+      }
+    }
+    IAMLogger.info(IAMLogger.MOVER, String.format("Plan: %s", plan.toXml()));
+    return plan;
+  }
+
+  public boolean postProvision(SailPointContext context, Workflow workflow) throws GeneralException {
+    try {
+      ProvisioningProject project = (ProvisioningProject) workflow.get("project");
+      IAMLogger.debug(IAMLogger.MOVER, String.format("Identity Project: %s", project.toXml()));
+
+      String identityName = (String) workflow.get("identityName");
+
+      Map allErrors = getProvisioningErrors(context, project);
+      boolean provisionSuccess = true;
+      if (allErrors != null &amp;&amp; !allErrors.isEmpty()) {
+        IAMLogger.info(IAMLogger.MOVER, String.format("Found identity provisioning errors: %s", allErrors));
+        provisionSuccess = false;
+      } else {
+        IAMLogger.info(IAMLogger.MOVER, String.format("MOVER for Identity: %s is successfull", identityName));
+      }
+      return provisionSuccess;
+    } catch (Exception ex) {
+      IAMLogger.error(IAMLogger.MOVER, String.format("ERROR | Exception occured while Post Provision with Exception: %s", ex.getMessage()), ex);
+      throw new GeneralException(ex);
+    }
+  }
+
+  public void aggregateAndRefresh(SailPointContext context, Workflow workflow) throws GeneralException {
+    try {
+      ProvisioningProject project = (ProvisioningProject) workflow.get("project");
+      if (project != null &amp;&amp; project.getMasterPlan() != null) {
+        List&lt;ProvisioningPlan> plans = project.getIntegrationPlans();
+        for (ProvisioningPlan plan : plans) {
+          if (plan.getAccountRequests() != null) {
+            for (AccountRequest acctReq : plan.getAccountRequests()) {
+              if (acctReq.getApplicationName().startsWith(IAMConstants.AD)) {
+                if (acctReq.getAttributeRequest("AC_NewName") != null || acctReq.getAttributeRequest("AC_NewParent") != null) {
+                  String cn = acctReq.getNativeIdentity().substring(0, acctReq.getNativeIdentity().indexOf(","));
+                  String ou = acctReq.getNativeIdentity().substring(acctReq.getNativeIdentity().indexOf(",") + 1);
+                  if (acctReq.getAttributeRequest("AC_NewName") != null) {
+                    cn = (String) acctReq.getAttributeRequest("AC_NewName").getValue();
+                  }
+                  if (acctReq.getAttributeRequest("AC_NewParent") != null) {
+                    ou = (String) acctReq.getAttributeRequest("AC_NewParent").getValue();
+                  }
+                  String nativeId = cn + "," + ou;
+                  IAMUtil.aggregateAccount(context, nativeId, IAMConstants.AD);
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      IAMUtil.refreshIdentity(context, workflow.getString("identityName"));
+    } catch (Exception ex) {
+      IAMLogger.error(IAMLogger.MOVER, String.format("ERROR | Exception occured while Aggregating Account with Exception: %s", ex.getMessage()), ex);
+      throw new GeneralException(ex);
+    }
+  }
+  </Source>
+</Rule>

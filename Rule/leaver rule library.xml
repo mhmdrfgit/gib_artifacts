@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="SP Leaver Rule Library">
+  <ReferencedRules>
+    <Reference class="sailpoint.object.Rule" name="SP Common Rule Library"/>
+    <Reference class="sailpoint.object.Rule" name="SP Provisioning Rules Library"/>
+    <Reference class="sailpoint.object.Rule" name="SP Role Assigment Rule Library"/>
+  </ReferencedRules>
+  <Source>
+  import java.util.List;
+  import java.util.Map;
+  
+  import com.iam.IAMConstants;
+  import com.iam.IAMLogger;
+  import com.iam.IAMUtil;
+  
+  import sailpoint.api.Provisioner;
+  import sailpoint.api.SailPointContext;
+  import sailpoint.object.Bundle;
+  import sailpoint.object.Identity;
+  import sailpoint.object.Link;
+  import sailpoint.object.ProvisioningPlan;
+  import sailpoint.object.ProvisioningPlan.AccountRequest;
+  import sailpoint.object.ProvisioningPlan.AttributeRequest;
+  import sailpoint.object.ProvisioningProject;
+  import sailpoint.object.Workflow;
+  import sailpoint.tools.GeneralException;
+
+  public ProvisioningPlan buildPlan(SailPointContext context, Workflow workflow) throws GeneralException {
+    IAMLogger.info(IAMLogger.LEAVER, String.format("Building plan for: %s", workflow.getString("identityName")));
+    Identity identity = context.getObjectByName(Identity.class, workflow.getString("identityName"));
+
+    ProvisioningPlan plan = new ProvisioningPlan();
+    plan.setIdentity(identity);
+
+    List&lt;Bundle> roleAssigns = identity.getAssignedRoles();
+    AccountRequest acctReq = new AccountRequest(AccountRequest.Operation.Modify, "IIQ", null, workflow.getString("identityName"));
+    for (Bundle assignedRole : roleAssigns) {
+      acctReq.add(new AttributeRequest("assignedRoles", ProvisioningPlan.Operation.Remove, assignedRole.getName()));
+    }
+    plan.add(acctReq);
+
+    List&lt;Link> links = identity.getLinks();
+    for (Link link : links) {
+      if (IAMConstants.HRMS.equalsIgnoreCase(link.getApplicationName()) || IAMConstants.HRMS_FILE.equalsIgnoreCase(link.getApplicationName())) {
+        continue;
+      }
+      if (IAMConstants.AD.equalsIgnoreCase(link.getApplicationName())) {
+        AccountRequest adAcctReq = new AccountRequest(AccountRequest.Operation.Disable, link.getApplicationName(), null, link.getNativeIdentity());
+        if (link.getAttribute("memberOf") != null) {
+          adAcctReq.add(new AttributeRequest("memberOf", ProvisioningPlan.Operation.Remove, link.getAttribute("memberOf")));
+        }
+        plan.add(adAcctReq);
+      }
+    }
+    IAMLogger.info(IAMLogger.LEAVER, String.format("Plan: %s", plan.toXml()));
+    return plan;
+  }
+
+  public boolean postProvision(SailPointContext context, Workflow workflow) throws GeneralException {
+    try {
+      ProvisioningProject project = (ProvisioningProject) workflow.get("project");
+      IAMLogger.debug(IAMLogger.LEAVER, String.format("Identity Project: %s", project.toXml()));
+
+      String identityName = (String) workflow.get("identityName");
+
+      Map allErrors = getProvisioningErrors(context, project);
+      boolean provisionSuccess = true;
+      if (allErrors != null &amp;&amp; !allErrors.isEmpty()) {
+        IAMLogger.info(IAMLogger.LEAVER, String.format("Found identity provisioning errors: %s", allErrors));
+        if (allErrors.keySet().contains(IAMConstants.AD)) {
+          provisionSuccess = false;
+        }
+      } else {
+        IAMLogger.info(IAMLogger.LEAVER, String.format("LEAVER for Identity: %s is successfull", identityName));
+      }
+      return provisionSuccess;
+    } catch (Exception ex) {
+      IAMLogger.error(IAMLogger.LEAVER, String.format("ERROR | Exception occured while Post Provision with Exception: %s", ex.getMessage()), ex);
+      throw new GeneralException(ex);
+    }
+  }
+
+  public void aggregateAndRefresh(SailPointContext context, Workflow workflow) throws GeneralException {
+    try {
+      ProvisioningProject project = (ProvisioningProject) workflow.get("project");
+      if (project != null &amp;&amp; project.getMasterPlan() != null) {
+        List&lt;ProvisioningPlan> plans = project.getIntegrationPlans();
+        for (ProvisioningPlan plan : plans) {
+          if (plan.getAccountRequests() != null) {
+            for (AccountRequest acctReq : plan.getAccountRequests()) {
+              if (acctReq.getApplicationName().startsWith(IAMConstants.AD)) {
+                if (acctReq.getAttributeRequest("AC_NewName") != null || acctReq.getAttributeRequest("AC_NewParent") != null) {
+                  String cn = acctReq.getNativeIdentity().substring(0, acctReq.getNativeIdentity().indexOf(","));
+                  String ou = acctReq.getNativeIdentity().substring(acctReq.getNativeIdentity().indexOf(",") + 1);
+                  if (acctReq.getAttributeRequest("AC_NewName") != null) {
+                    cn = (String) acctReq.getAttributeRequest("AC_NewName").getValue();
+                  }
+                  if (acctReq.getAttributeRequest("AC_NewParent") != null) {
+                    ou = (String) acctReq.getAttributeRequest("AC_NewParent").getValue();
+                  }
+                  String nativeId = cn + "," + ou;
+                  IAMUtil.aggregateAccount(context, nativeId, IAMConstants.AD);
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      IAMUtil.refreshIdentity(context, workflow.getString("identityName"));
+    } catch (Exception ex) {
+      IAMLogger.error(IAMLogger.LEAVER, String.format("ERROR | Exception occured while Aggregating Account with Exception: %s", ex.getMessage()), ex);
+      throw new GeneralException(ex);
+    }
+  }
+  </Source>
+</Rule>

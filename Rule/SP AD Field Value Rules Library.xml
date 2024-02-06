@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="SP AD Field Value Rules Library">
+	<Source> 
+		import java.util.List;
+		import java.util.Map;
+		import java.util.Random;
+		import java.text.SimpleDateFormat;
+		import java.time.Instant;
+		import java.time.LocalDate;
+		import java.time.ZoneId;
+		import com.riyadbank.iam.IAMConstants;
+		import com.riyadbank.iam.IAMUtil;
+		import sailpoint.api.IdentityService;
+		import sailpoint.api.SailPointContext;
+		import sailpoint.object.Application;
+		import sailpoint.object.Custom;
+		import sailpoint.object.Identity;
+		import sailpoint.object.Link;
+		import sailpoint.tools.GeneralException;
+		import sailpoint.tools.Util;
+
+		public String getDistinguishedName(SailPointContext context, Identity identity, String op) throws GeneralException {
+		  String ouName = "";//distName - put in OU=Sailpoint ,OU=Services,DC=Reyad bank,DC=local??
+		  return String.format("CN=%s %s,%s", identity.getFirstname(), identity.getLastname(), ouName);
+		}
+
+		public String getInitials(SailPointContext context, Identity identity, String op) {
+			//Intials - First letters of firstName, Secondname,middlename
+			String displayName = identity.getDisplayName().trim().replaceAll("\\s{2,}", " ");;
+			String[] words = displayName.split("\\s+");
+
+		        if (words.length > 2) {
+		            return String.format("%s%s%s",words[0].substring(0,1).toUpperCase(),words[1].substring(0,1).toUpperCase(),words[2].substring(0,1).toUpperCase());
+		        }
+				else if (words.length == 2) {
+		            return String.format("%s%s",words[0].substring(0,1).toUpperCase(),words[1].substring(0,1).toUpperCase());
+		        }
+				else{
+					return "A";//check this
+				}
+		}
+
+
+		public String getEmail(SailPointContext context, Identity identity, String op) {
+		  if (Util.isNotNullOrEmpty(identity.getEmail())) {
+		    return identity.getEmail();
+		  }
+		  return String.format("%s.%s@riyadbank.com",identity.getFirstname().toLowerCase(),identity.getLastname().toLowerCase());
+		}
+
+		public String getUserPrincipalName(SailPointContext context, Identity identity, String op) {
+		  return String.format("%s@intra.riyadbank.com", identity.getName());
+		}
+
+		public String getADDisplayName(SailPointContext context, Identity identity, String op) {
+				return String.format("%s %s", identity.getFirstname(),identity.getLastname());
+		}
+
+		public String getADPassword(SailPointContext context, Identity identity, String op) {
+		  Random random = new Random();
+		  return String.format("RB@%s", String.format("%04d", random.nextInt(10000)));
+		}
+		public String getPwdLastSet(SailPointContext context, Identity identity, String op) {
+		  return true;
+		}
+
+		public String getADManagerDN(SailPointContext context, Identity identity, String op) throws GeneralException {
+		  Identity managerObj = identity.getManager();
+		  if (managerObj != null) {
+		    Application app = context.getObject(Application.class, "Active Directory");
+		    if (app != null) {
+		      IdentityService is = new IdentityService(context);
+		      List & lt;
+		      Link > adLinks = is.getLinks(managerObj, app);
+		      if (adLinks != null & amp; & amp; !adLinks.isEmpty()) {
+		        return adLinks.get(0).getNativeIdentity();
+		      }
+		    }
+		  }
+		  return null;
+		}
+
+
+		public String getExchHomeMDB(SailPointContext context, Identity identity, String op) throws GeneralException {
+		  return "";
+		}
+
+		public String getAcccountExpiresValue(SailPointContext context, Identity identity, String op) throws java.text.ParseException {
+		  try {
+		    String leavingDateString = identity.getStringAttribute("endDate");
+		    if (Util.isNotNullOrEmpty(leavingDateString)) {
+		      Date leavingDate = new SimpleDateFormat("dd-MMM-yyyy").parse(leavingDateString);
+		      LocalDate leavingLocalDate = Instant.ofEpochMilli(leavingDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+		      if (!leavingLocalDate.isAfter(LocalDate.now().plusYears(1))) {
+		        return Long.toString(IAMUtil.millisToFiletime(leavingDate.getTime()));
+		      }
+		    }
+		  } catch (Exception ex) {}
+		  return null;
+		}
+
+	</Source>
+</Rule>

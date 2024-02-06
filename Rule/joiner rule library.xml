@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="SP Joiner Rule Library">
+  <ReferencedRules>
+    <Reference class="sailpoint.object.Rule" name="SP Common Rule Library"/>
+    <Reference class="sailpoint.object.Rule" name="SP Role Assigment Rule Library"/>
+    <Reference class="sailpoint.object.Rule" name="SP Provisioning Rules Library"/>
+  </ReferencedRules>
+  <Source>
+  import com.iam.IAMLogger;
+
+  import sailpoint.api.SailPointContext;
+  import sailpoint.object.Identity;
+  import sailpoint.object.ProvisioningPlan;
+  import sailpoint.object.Workflow;
+  import sailpoint.tools.GeneralException;
+  import sailpoint.workflow.WorkflowContext;
+
+  public ProvisioningPlan buildPlan(SailPointContext context, Workflow workflow) throws GeneralException {
+    IAMLogger.info(IAMLogger.JOINER, String.format("Building plan for: %s", workflow.getString("identityName")));
+    Identity identity = context.getObjectByName(Identity.class, workflow.getString("identityName"));
+
+    ProvisioningPlan plan = getDynamicRolesPlan(context, identity);
+    IAMLogger.info(IAMLogger.JOINER, String.format("Plan: %s", plan.toXml()));
+    return plan;
+  }
+
+  public boolean postProvision(SailPointContext context, Workflow workflow) throws GeneralException {
+    try {
+      ProvisioningProject project = (ProvisioningProject) workflow.get("project");
+      IAMLogger.debug(IAMLogger.JOINER, String.format("Identity Project: %s", project.toXml()));
+
+      String identityName = (String) workflow.get("identityName");
+      Identity identity = context.getObjectByName(Identity.class, identityName);
+
+      Map allErrors = getProvisioningErrors(context, project);
+      boolean provisionSuccess = true;
+      if (allErrors != null &amp;&amp; !allErrors.isEmpty()) {
+        IAMLogger.info(IAMLogger.JOINER, String.format("Found identity provisioning errors: %s", allErrors));
+        provisionSuccess = false;
+      } else {
+        IAMLogger.info(IAMLogger.JOINER, String.format("LEAVER for Identity: %s is successfull", identityName));
+      }
+
+      List&lt;Map> emailArgList = (List) workflow.get("emailArgList");
+      if (emailArgList == null) {
+        emailArgList = new ArrayList&lt;Map>();
+      }
+
+      Map emailArgs = new HashMap();
+      emailArgs.putAll(identity.getAttributes().getMap());
+      emailArgs.put("identityName", identity.getName());
+      emailArgs.put("identityDisplayName", identity.getDisplayName());
+      emailArgs.put("to", "test@gib.com");
+      if (provisionSuccess) {
+        emailArgs.put("template", "SP Joiner Success Email Template");
+        emailArgs.put("emailTemplate", "SP Joiner Success Email Template");
+      } else {
+        emailArgs.put("template", "SP Joiner Failure Email Template");
+        emailArgs.put("emailTemplate", "SP Joiner Failure Email Template");
+      }
+
+      List&lt;ProvisioningPlan> plans = project.getPlans();
+      List&lt;Map> accounts = new ArrayList&lt;Map>();
+      for (ProvisioningPlan plan : plans) {
+        for (AccountRequest acctRequest : plan.getAccountRequests()) {
+          String appName = acctRequest.getApplicationName();
+          Map account = new HashMap();
+          String nativeId = acctRequest.getNativeIdentity();
+          if (appName.equals(IAMConstants.AD)) {
+            nativeId = (String) acctRequest.getAttributeRequest("sAMAccountName").getValue();
+          }
+          account.put("Application", appName);
+          account.put("Account", nativeId);
+          account.put("Operation", acctRequest.getOperation().toString());
+          if (allErrors != null &amp;&amp; allErrors.keySet().contains(appName)) {
+            account.put("Error", allErrors.get(appName));
+          } else {
+            account.put("Error", "Success");
+          }
+          accounts.add(account);
+        }
+      }
+      emailArgs.put("accounts", accounts);
+      emailArgList.add(emailArgs);
+      workflow.put("emailArgList", emailArgList);
+
+      return provisionSuccess;
+    } catch (Exception ex) {
+      IAMLogger.error(IAMLogger.JOINER, String.format("ERROR | Exception occured while Post Provision with Exception: %s", ex.getMessage()), ex);
+      throw new GeneralException(ex);
+    }
+  }
+  </Source>
+</Rule>
