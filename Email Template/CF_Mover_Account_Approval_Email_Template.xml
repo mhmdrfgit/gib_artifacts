@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE EmailTemplate PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<EmailTemplate cc="$ccEmails" name="CF Mover Account Approval Email Template">
+  <Body>
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;&lt;br/&gt;
+<![CDATA[<html xmlns="http://www.w3.org/1999/xhtml">
+   <span style="padding-right">
+   <img src='http://rtliamdev:8080/static/carrefour_logo.jpg'></img>
+   </span><br/>
+   <img src='http://rtliamdev:8080/static/carrefour_line.jpg'></img>
+   <br/>
+   <br/>
+   <body style='font-family:Dubai' size='11'>
+      <table cellpadding="0" cellspacing="0" style="text-align:left;border-top:0px solid #b2b2b2;border-bottom:0px solid #b2b2b2;">
+         <tbody>
+            <tr valign="top">
+               <td>
+                  <table cellpadding="0" cellspacing="0" style="margin:0 border="0">
+                     <tbody>
+                        <tr valign="top" colspan="3">
+                           <td>
+                              <p style="font:normal 11pt Dubai;line-height:15pt;">Greetings $identityModel.manager.displayName,</p>
+                              <p style="font:normal 11pt Dubai;line-height:15pt;">
+								This email is to inform you that, a new transfer request has been intiated for the following employee. Store HC <strong>($storeHCModel.displayName)</strong> has made below account selection for this employee. Following workItem has been assigned to you for your approval.
+							  </p>
+                              <p style="font:normal 11pt Dubai;line-height:15pt;"><b>Workitem:&nbsp;<a href="https://mafiam.retailsso.com/identityiq/workitem/workItem.jsf?id=$item.id">Account Approval in IAM</a></b>
+							  </p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong><u>Employee Tansfer Details:</u></strong></p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Employee No:&nbsp;</strong>$identityModel.employeeNumber</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Name:&nbsp;</strong>$identityModel.displayName</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Company Type:&nbsp;</strong>$identityModel.companyType</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Company:&nbsp;</strong>$identityModel.company</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Designation:&nbsp;</strong>$identityModel.designation</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Department:&nbsp;</strong>$identityModel.department</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Section:&nbsp;</strong>$identityModel.section</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Country:&nbsp;</strong>$identityModel.country</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>City:&nbsp;</strong>$identityModel.city</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Reporting manger:&nbsp;</strong>$identityModel.manager.displayName</p>
+                              </p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong><u>Transfer From:</u></strong></p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Company Type:&nbsp;</strong>$previousIdentityModel.companyType</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Company:&nbsp;</strong>$previousIdentityModel.company</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Designation:&nbsp;</strong>$previousIdentityModel.designation</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Department:&nbsp;</strong>$previousIdentityModel.department</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Section:&nbsp;</strong>$previousIdentityModel.section</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Country:&nbsp;</strong>$previousIdentityModel.country</p>
+                              </p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong><u>Existing Account Details:</u></strong></p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Login ID:&nbsp;</strong>$identityModel.sAMAccountName</p>
+                              <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Email:&nbsp;</strong>$identityModel.email</p>
+            
+							  <p style="font:normal 11pt Dubai;line-height:15pt;">Following is the account Selection By - $storeHCModel.displayName</p>
+							  <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Department:&nbsp;</strong>$hcFormModel.selectedDepartment</p>
+							  <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Section:&nbsp;</strong>$hcFormModel.selectedSection</p>
+							  <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>User Role:&nbsp;</strong>$hcFormModel.selectedUserRole</p>
+							  <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"><strong>Login Id:&nbsp;</strong>$hcFormModel.selectedDomain</p>
+							  
+							  <p style="font:normal 11pt Dubai;line-height:15pt;"><strong>Comments:&nbsp;</strong>$hcFormModel.hcComments</p>
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+                  <br/>
+                  <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;">Thanks and Regards,</p>
+                  <p style="margin:0 0 50px;padding:0;font:bold 11pt Dubai;line-height:15pt;">Identity Access Manager</p>
+                  <img src='http://rtliamdev:8080/static/carrefour_line.jpg'></img>  
+                  <div style="float:right;font:bold 9pt Dubai;padding-right:3%;">For Internal Use Only</div>
+               </td>
+            </tr>
+         </tbody>
+      </table>
+   </body>
+</html>]]>
+  </Body>
+  <Signature>
+    <Inputs>
+      <Argument name="item" type="WorkItem"/>
+      <Argument name="identityModel" type="Map"/>
+      <Argument name="previousIdentityModel" type="Map"/>
+      <Argument name="storeHCModel" type="Map"/>
+      <Argument name="hcFormModel" type="Map"/>
+      <Argument name="storeHCModel" type="Map"/>
+      <Argument name="ccEmails" type="String"/>
+      <Argument name="identityName" type="String"/>
+      <Argument name="identityDisplayName" type="String"/>
+    </Inputs>
+  </Signature>
+  <Subject>Tranfer: Account Selection Approval Request for $identityDisplayName ($identityName).</Subject>
+</EmailTemplate>

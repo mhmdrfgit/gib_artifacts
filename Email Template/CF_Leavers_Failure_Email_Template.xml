@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE EmailTemplate PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<EmailTemplate name="CF Leavers Failure Email Template">
+  <Body> 
+  Greetings IT,
+  
+  Employee: $emailArgs.displayName ($emailArgs.employeeNumber) account disabling with Login ID: $emailArgs.sAMAccountName has failed as a part of Leaver process. Following is the status of all the requested accounts.
+  
+  #foreach ($account in $emailArgs.accounts)
+    &gt; $account.Application | $account.Account | $account.Operation | $account.Error
+  #end
+  
+  Thanks
+  Identity Access Management
+  </Body>
+  <Signature>
+    <Inputs>
+      <Argument name="emailArgs" type="Map"/>
+      <Argument name="identityName" type="String"/>
+    </Inputs>
+  </Signature>
+  <Subject>Failure: Leaver for Employee $identityName Failed.</Subject>
+</EmailTemplate>

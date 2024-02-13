@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE EmailTemplate PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<EmailTemplate cc="$emailArgs.cc" name="CF Mover Failure Email Template">
+  <Body>
+<![CDATA[<html>
+  <body>
+    <br>
+    <span style="padding-right">
+      <img src="https://corporatesites.blob.core.windows.net/ahlan/Images/carrefour_logo.jpg?sp=r&amp;st=2021-02-17T05:58:14Z&amp;se=2031-02-17T13:58:14Z&amp;spr=https&amp;sv=2020-02-10&amp;sr=b&amp;sig=%2BK9yieOeflU%2Bq0qEegSE1ksRhprD6zz6CkzTnu0wHsw%3D">
+    </span>
+    <br>
+    <table style="text-align:left;border-top:0px solid #b2b2b2;border-bottom:0px solid #b2b2b2;" cellspacing="0" cellpadding="0">
+      <tbody>
+        <tr valign="top">
+          <td>
+            <table style="margin:0 border=" 0"="" cellspacing="0" cellpadding="0">
+              <tbody>
+                <tr valign="top" colspan="3">
+                  <td>
+                    <p style="font:normal 11pt Dubai;line-height:15pt;">Greetings IT HelpDesk,</p>
+                    <p style="font:normal 11pt Dubai;line-height:15pt;"> This email is to inform you that, during the transfer process for Employee: $identityDisplayName ($identityName) IAM system observed following <font color="red">
+                        <strong>Failures</strong>
+                      </font>. </p>
+                    <p style="font:normal 11pt Dubai;line-height:15pt;">Following is the status of all its related accounts.</p>
+                    <span>
+                      <ul> #foreach ($account in $emailArgs.accounts) <li style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"> $account.Application > <strong>$account.Account</strong> > $account.Operation > #if($account.Error) $account.Error #else Success #end </li> #end </ul>
+                    </span>
+                    <p style="font:normal 11pt Dubai;line-height:15pt;">NOTE: Any Errors in provisioning, in any of the above applications, needs to be handled manually in the target system.</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font:normal 11pt Dubai;line-height:15pt;">Thanks and Regards,</p>
+            <p style="margin:0 0 50px;padding:0;font:bold 11pt Dubai;line-height:15pt;">Identity Access Manager</p>
+            <img src="https://corporatesites.blob.core.windows.net/ahlan/Images/carrefour_line.jpg?sp=r&amp;st=2021-02-17T05:56:54Z&amp;se=2031-02-17T13:56:54Z&amp;spr=https&amp;sv=2020-02-10&amp;sr=b&amp;sig=C1dD3Ko2ISJY25Bgiv3vDCWySMez2qcglisMfcU7Ygg%3D">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>]]>
+  </Body>
+  <Signature>
+    <Inputs>
+      <Argument name="emailArgs" type="Map"/>
+      <Argument name="identityName" type="String"/>
+      <Argument name="identityDisplayName" type="String"/>
+    </Inputs>
+  </Signature>
+  <Subject>Transfer for Employee $identityDisplayName ($identityName) FAILED.</Subject>
+</EmailTemplate>

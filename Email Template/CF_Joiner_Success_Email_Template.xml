@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE EmailTemplate PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<EmailTemplate cc="$emailArgs.cc" name="CF Joiner Success Email Template">
+  <Body>
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;&lt;br/&gt;
+<![CDATA[<html xmlns="http://www.w3.org/1999/xhtml">
+   <body style='font-family:Dubai' size='11'>
+      <table cellpadding="0" cellspacing="0" style="text-align:left;border-top:0px solid #b2b2b2;border-bottom:0px solid #b2b2b2;">
+         <tbody>
+            <tr valign="top">
+               <td>
+                  <table cellpadding="0" cellspacing="0" style="margin:0 border="0">
+                     <tbody>
+                        <tr valign="top" colspan="3">
+                           <td>
+                              <p style="font:normal 11pt Dubai;line-height:15pt;">Greetings IT HelpDesk,</p>
+                              <p style="font:normal 11pt Dubai;line-height:15pt;">
+								This email is to inform you that, Joiner for Employee: $identityDisplayName ($identityName) is successfull.
+							  </p><p style="font:normal 11pt Dubai;line-height:15pt;">Following is the status of all its related accounts.</p>
+							  <span><ul>
+								  #foreach ($account in $emailArgs.accounts)
+									<li style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"> $account.Application > <strong>$account.Account</strong> > $account.Operation > #if($account.Error) $account.Error #else Success #end</li>
+								  #end
+								  </ul></span>
+								  <p style="font:normal 11pt Dubai;line-height:15pt;">NOTE: Any Errors in provisioning, in any of the above applications, needs to be handled manually in the target system.</p>
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+                  <p style="font:normal 11pt Dubai;line-height:15pt;">Thanks and Regards,</p>
+                  <p style="margin:0 0 50px;padding:0;font:bold 11pt Dubai;line-height:15pt;">Identity Access Manager</p>
+                  <div style="float:right;font:bold 9pt Dubai;padding-right:3%;">For Internal Use Only</div>
+               </td>
+            </tr>
+         </tbody>
+      </table>
+   </body>
+</html>]]>
+  </Body>
+  <Signature>
+    <Inputs>
+      <Argument name="emailArgs" type="Map"/>
+      <Argument name="identityName" type="String"/>
+      <Argument name="identityDisplayName" type="String"/>
+    </Inputs>
+  </Signature>
+  <Subject>Joiner for Employee $identityDisplayName ($identityName) is Successfull.</Subject>
+</EmailTemplate>

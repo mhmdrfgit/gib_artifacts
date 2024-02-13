@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE EmailTemplate PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<EmailTemplate name="CF Leavers Success Email Template">
+  <Body> 
+  Greetings IT,
+  
+  Employee: $emailArgs.displayName ($emailArgs.employeeNumber) account has been successfully disabled with Login ID: $emailArgs.sAMAccountName as a part of Leavers process. Following is the status of all the related accounts.
+  
+  #foreach ($account in $emailArgs.accounts)
+    &gt; $account.Application | $account.Account | $account.Operation | $account.Error
+  #end
+  
+  Thanks
+  Identity Access Management
+  </Body>
+  <Signature>
+    <Inputs>
+      <Argument name="emailArgs" type="Map"/>
+      <Argument name="identityName" type="String"/>
+    </Inputs>
+  </Signature>
+  <Subject>Success: Leaver for Employee $identityName is Successfull.</Subject>
+</EmailTemplate>

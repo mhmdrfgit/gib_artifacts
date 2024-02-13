@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE EmailTemplate PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<EmailTemplate cc="intuseradmin@mafcarrefour.com" name="CF V2 Joiner Welcome Email Template">
+  <Body><![CDATA[<html>
+  <body>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <br>
+    <span style="padding-right:800px">
+      <img src="https://corporatesites.blob.core.windows.net/ahlan/Images/carrefour_logo.jpg?sp=r&amp;st=2021-02-17T05:58:14Z&amp;se=2031-02-17T13:58:14Z&amp;spr=https&amp;sv=2020-02-10&amp;sr=b&amp;sig=%2BK9yieOeflU%2Bq0qEegSE1ksRhprD6zz6CkzTnu0wHsw%3D">
+    </span>
+    <br>
+    <table cellpadding="0" cellspacing="0" width="640" border="0" align="left" style="margin:0 auto;padding:0;">
+      <tbody style="font-family:Dubai" size="11">
+        <tr valign="top">
+          <td>
+            <table cellpadding="0" cellspacing="0" width="700">
+              <tbody>
+                <tr valign="middle">
+                  <td>
+                    <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;">Dear $identityDisplayName,</p>
+                    <br>
+                    <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;">Welcome to our Majid Al Futtaim Family!</p>
+                    <br>
+                    <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;">In Majid Al Futtaim - Retail we believe that all our employees should benefit from a great experience since they are our greatest asset.</p>
+                    <br>
+                    <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"> Our company is always aiming to create great moments for everyone, from customers to partners, as we constantly continue to promote our core values: <b>Bold, Passionate and Together.</b>
+                    </p>
+                    <br>
+                    <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;">Based on your role you currently have access to these applications as listed below.</p>
+                    <br>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table cellpadding="0" cellspacing="0" width="770">
+              <!-- Table------------ -->
+              <tbody>
+                <tr bgcolor="#D3D3D3">
+                  <th style="border: 1px solid black;font:bold 11pt Dubai;" width="25%">Application Name</th>
+                  <th style="border: 1px solid black;font:bold 11pt Dubai;" width="25%">Account</th>
+                  <th style="border: 1px solid black;font:bold 11pt Dubai;" width="25%">Description</th>
+                </tr> #foreach ($app in $emailArgs.apps) <tr>
+                  <td style="border: 1px solid black;font:normal 11pt Dubai;" width="150px" height="30px">$app.appName</td>
+                  <td style="border: 1px solid black;font:normal 11pt Dubai;" width="200px" height="30px">$app.accountName</td>
+                  <td style="border: 1px solid black;font:normal 11pt Dubai;" width="200px" height="30px">$app.description</td>
+                </tr> #end
+              </tbody>
+            </table>
+            <br>
+            <!-- <Table------------ -->
+          </td>
+        </tr>
+        <tr valign="left">
+          <td>
+            <p style="margin:0;padding:0;font:bold 11pt Dubai;line-height:15pt;">Identity and Access Management (IAM):</p>
+            <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;">You can log in to our Self Service Portal (IAM) using the below link in order to raise any request to your direct manager.</p>
+            <p> Click URL: <a href="https://mafiam.retailsso.com">IAM</a>
+            </p>
+            <p style="margin:0;padding:0;font:bold 11pt Dubai;line-height:15pt;">Training:</p>
+            <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;">You can get online training for the above mentioned applications from through the below link:</p>
+            <p> Click URL: <a href="https://mafventure.plateau.com/learning/user/personal/landOnPortalHome.do?OWASP_CSRFTOKEN=TSDT-Y06P-7228-KGIC-435J-4POY-4LZT-11MW&fromSF=Y&fromDeepLink=true&pageID=">MAF Trainings</a>
+            </p>
+            <p style="margin:0;padding:0;font:bold 11pt Dubai;line-height:15pt;">Acknowledgment:</p>
+            <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;">Its very important to accept MAF terms and condition to have access to the above mentioned applications, if you do not accept these conditions then the ID gets blocked after 3 days from your initial day of login.</p>
+            <p> Click URL: <a href="http://rtl-ho-spfe03/iam">Acknowledgment</a>
+            </p>
+            <p style="margin:0;padding:0;font:bold 11pt Dubai;line-height:15pt;">Success factor:</p>
+            <p style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;">Kindly update your career details through the below mentioned URL to let us know more about you. This tool helps the HC team gain insight regarding your high performance and leadership potential to create greater opportunities for your professional development and personal growth.</p>
+            <p> Click URL: <a href="https://performancemanager.successfactors.eu/sf/start?_s.crb=AgF%252bkv2LiWTntzgkXICU6bpq8asgXgY0JckwAo658Tc%253d#Shell-home">Success factor</a>
+            </p>
+            <table cellpadding="0" cellspacing="0" width="770">
+              <tbody>
+                <!-- IAM---------------- -->
+                <!--END---------------- -->
+                <!-- TRAINING---------------- -->
+                <!--END---------------- -->
+                <!-- ACKNOWLEDEMENT ---------------- -->
+                <!--END ---------------- -->
+                <!-- SUCCESS FACTOR ---------------- -->
+                <!--END---------------- -->
+              </tbody>
+            </table>
+            <br>
+            <br>
+            <p style="font:normal 11pt Dubai;line-height:15pt;">Thanks and Regards,</p>
+            <p style="margin:0 0 50px;padding:0;font:bold 11pt Dubai;line-height:15pt;">Identity Access Manager</p>
+            <img src="https://corporatesites.blob.core.windows.net/ahlan/Images/carrefour_line.jpg?sp=r&amp;st=2021-02-17T05:56:54Z&amp;se=2031-02-17T13:56:54Z&amp;spr=https&amp;sv=2020-02-10&amp;sr=b&amp;sig=C1dD3Ko2ISJY25Bgiv3vDCWySMez2qcglisMfcU7Ygg%3D">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>]]>
+</Body>
+  <Signature>
+    <Inputs>
+      <Argument name="emailArgs" type="Map"/>
+      <Argument name="identityName" type="String"/>
+      <Argument name="identityDisplayName" type="String"/>
+    </Inputs>
+  </Signature>
+  <Subject>Welcome to our Majid Al Futtaim Family!</Subject>
+</EmailTemplate>

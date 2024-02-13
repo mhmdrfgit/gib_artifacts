@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE EmailTemplate PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<EmailTemplate cc="$emailArgs.ccEmails" name="CF V2 Access Request Failure Email Template">
+  <Body>
+  <![CDATA[<html>
+  <body>
+    <br>
+    <span style="padding-right">
+      <img src="https://corporatesites.blob.core.windows.net/ahlan/Images/carrefour_logo.jpg?sp=r&amp;st=2021-02-17T05:58:14Z&amp;se=2031-02-17T13:58:14Z&amp;spr=https&amp;sv=2020-02-10&amp;sr=b&amp;sig=%2BK9yieOeflU%2Bq0qEegSE1ksRhprD6zz6CkzTnu0wHsw%3D">
+    </span>
+    <br>
+    <br>
+    <br>
+    <table style="text-align:left;border-top:0px solid #b2b2b2;border-bottom:0px solid #b2b2b2;" cellspacing="0" cellpadding="0">
+      <tbody>
+        <tr valign="top">
+          <td>
+            <table style="margin:0 border=" 0"="" cellspacing="0" cellpadding="0">
+              <tbody>
+                <tr colspan="3" valign="top">
+                  <td>
+                    <p style="font:normal 11pt Dubai;line-height:15pt;">Greetings $emailArgs.launcherDisplayName,</p>
+                    <p style="font:normal 11pt Dubai;line-height:15pt;">This email is to inform you that your following access request is <font color="red">FAILED</font>.
+					<span>
+						<ul>
+							#foreach ($attributeName in $emailArgs.fields.keySet())
+								<li style="margin:0;padding:0;font:normal 11pt Dubai;line-height:15pt;"> <strong>$attributeName : 				</strong>$emailArgs.fields.get($attributeName)
+								</li>
+							#end
+						</ul>
+					</span>
+                    <span></span>
+					<p style="font:normal 11pt Dubai;line-height:15pt;"><b>For more details kindly track your request by accessing IAM quick link <a href="https://mafiam.retailsso.com/identityiq/identityRequest/identityRequest.jsf#/request/$emailArgs.requestId">Track My request</a></b><p>
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font:normal 11pt Dubai;line-height:15pt;">Thanks and Regards,</p>
+            <p style="margin:0 0 50px;padding:0;font:bold 11pt Dubai;line-height:15pt;">Identity Access Manager</p>
+            <img src="https://corporatesites.blob.core.windows.net/ahlan/Images/carrefour_line.jpg?sp=r&amp;st=2021-02-17T05:56:54Z&amp;se=2031-02-17T13:56:54Z&amp;spr=https&amp;sv=2020-02-10&amp;sr=b&amp;sig=C1dD3Ko2ISJY25Bgiv3vDCWySMez2qcglisMfcU7Ygg%3D">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>]]>
+  
+  </Body>
+  <Signature>
+    <Inputs>
+      <Argument name="emailArgs" type="Map"/>
+      <Argument name="identityDisplayName" type="String"/>
+      <Argument name="identityName" type="String"/>
+    </Inputs>
+  </Signature>
+  <Subject>Access Request Provisioning Failed for $identityDisplayName ($identityName).</Subject>
+</EmailTemplate>
