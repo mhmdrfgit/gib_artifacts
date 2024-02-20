@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="NESA Launch Bulk Action WF">
+  <Source>
+     import java.util.HashMap;
+
+     import sailpoint.api.Workflower;
+     import sailpoint.object.Workflow;
+     import sailpoint.object.WorkflowLaunch;
+
+     HashMap launchArgsMap = new HashMap();
+     launchArgsMap.put("trace", "true");
+     launchArgsMap.put("limit", 2000);
+
+     //Create WorkflowLaunch and set values
+     WorkflowLaunch wflaunch = new WorkflowLaunch();
+     Workflow wf = (Workflow) context.getObjectByName(Workflow.class,"NESA Bulk Action WF");
+     wflaunch.setWorkflowName(wf.getName());
+     wflaunch.setWorkflowRef(wf.getName());
+     wflaunch.setCaseName("NESA Bulk Action Workflow" );
+     wflaunch.setVariables(launchArgsMap);
+
+     //Create Workflower and launch workflow from WorkflowLaunch
+     Workflower workflower = new Workflower(context);
+     WorkflowLaunch launch = workflower.launch(wflaunch);
+  </Source>
+</Rule>

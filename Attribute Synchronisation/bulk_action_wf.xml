@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Workflow PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Workflow explicitTransitions="true" name="NESA Bulk Action WF" type="BatchProvisioning">
+  <Variable initializer="script:new Integer(0);" input="true" name="limit" type="integer"/>
+  <Variable initializer="script:new Integer(0);" name="slices" type="integer"/>
+  <Variable initializer="script:new Integer(0);" name="sliceCount" type="integer"/>
+  <Variable initializer="script:new Integer(2);" name="waitThreshold" type="integer"/>
+  <RuleLibraries>
+    <Reference class="sailpoint.object.Rule" name="NESA Bulk Action Rules Library"/>
+  </RuleLibraries>
+  <Step icon="Start" name="Start" posX="56" posY="10">
+    <Script>
+      <Source>
+            
+      
+      </Source>
+    </Script>
+    <Transition to="Execute"/>
+  </Step>
+  <Step action="script:return execute(context,workflow);" icon="Default" name="Execute" posX="159" posY="10" resultVariable="hasMoreElements">
+    <Transition to="Wait" when="hasMoreElements"/>
+    <Transition to="Stop"/>
+  </Step>
+  <Step icon="Default" name="Wait" posX="225" posY="95" wait="ref:waitThreshold">
+    <Transition to="Execute"/>
+  </Step>
+  <Step icon="Stop" name="Stop" posX="299" posY="5"/>
+</Workflow>
